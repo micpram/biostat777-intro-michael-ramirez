@@ -1,4 +1,8 @@
-# HOME
+---
+title: HOME
+layout: template
+filename: README.md
+--- 
 
 Hello, everyone! 
 
