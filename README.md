@@ -1,3 +1,7 @@
+<li class="masthead__menu-item">
+          <a href="About Me">About Me</a>
+        </li>
+
 # HOME
 
 Hello, everyone! 
