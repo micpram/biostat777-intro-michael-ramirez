@@ -1,6 +1,6 @@
 # biostat777-intro-michael-ramirez
 
-![Graffiti Alley in Baltimore, MD](Graffiti Alley in Baltimore.jpg)
+![Graffiti Alley in Baltimore, MD](Graffiti Alley in Baltimore.jpg = 150x150)
 
 Hello, everyone! 
 
