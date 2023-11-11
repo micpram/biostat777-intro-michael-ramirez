@@ -1,4 +1,8 @@
-## About Me
+---
+title: ABOUT ME
+layout: template
+filename: ABOUT.md
+--- 
 
 ## Education
 BA in Psychology & Physiology, Cal Poly Pomona
