@@ -1,6 +1,6 @@
 # biostat777-intro-michael-ramirez
 
-<img src="Graffiti Alley in Baltimore.jpg" width="250" height="300">
+<img src="Graffiti Alley in Baltimore.jpg" width="300" height="400">
 
 Hello, everyone! 
 
