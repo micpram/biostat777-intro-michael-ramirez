@@ -1,6 +1,3 @@
-## ABOUT.md
-About Me
-
 # HOME
 
 Hello, everyone! 
