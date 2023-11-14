@@ -2,7 +2,6 @@ project:
   type: website
   render:
     - "*.qmd"
-    - "!posts/2022-12-13-flexdashboard/*.Rmd"
     
 website:
   title: "Michael Ramirez"
