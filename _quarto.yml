@@ -13,9 +13,9 @@ website:
         file: README.md
         menu:
         - text: "About Me"
-          href: ABOUT.md
+          href: ABOUT.qmd
         - text: "Data Analysis"
-          href: Analysis.md
+          href: Overdose.ipynb
 format:
   html:
     theme: simplex
