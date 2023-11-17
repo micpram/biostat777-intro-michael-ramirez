@@ -1,0 +1,247 @@
+---
+title: "Project Climate Change"
+author: "Michael Ramirez"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+library(here)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(ggplot2)
+library(gapminder)
+```
+
+## Project Aim
+
+The aim of this project is to analyze yearly rainfall and temperatures in Australia. The purpose of this analysis is to describe the trend of rainfall and to determine whether average rainfall and temperature show similar trends. Overall, this project is meant to capture potential climate change among a specific world region.
+
+## Intended Audience
+
+The intended audience for this project is anyone curious to understand whether a visual relationship can be made between rainfall and temperature. Those curious in understanding climate change and how it could be understood through certain metrics would be interested in this data and could perform a similar analysis. Ultimately, the intended audience is not for novel researchers but rather those who analyze data for fun.
+
+::: callout-important
+## Data Source
+
+Data used for this analysis is publicly available on TidyTuesday on GitHub: <https://github.com/rfordatascience/tidytuesday>. Data reflects temperature and rainfall for Australia.
+:::
+
+## Data Dictionary
+
+### `rainfall.csv`
+
+| variable     | class     | description                           |
+|:-------------|:----------|:--------------------------------------|
+| station_code | character | Station Code                          |
+| city_name    | character | City Name                             |
+| year         | double    | Year                                  |
+| month        | character | Month                                 |
+| day          | character | Day                                   |
+| rainfall     | double    | rainfall in millimeters               |
+| period       | double    | how many days was it collected across |
+| quality      | character | Certified quality or not              |
+| lat          | double    | latitude                              |
+| long         | double    | longitude                             |
+| station_name | character | Station Name                          |
+
+### `temperature.csv`
+
+| variable    | class     | description                      |
+|:------------|:----------|:---------------------------------|
+| city_name   | character | City Name                        |
+| date        | double    | Date                             |
+| temperature | double    | Temperature in Celsius           |
+| temp_type   | character | Temperature type (min/max daily) |
+| site_name   | character | Actual site/weather station      |
+
+```{r}
+rainfall <- readRDS(here("data","tuesdata_rainfall.RDS"))
+temperature <- readRDS(here("data","tuesdata_temperature.RDS"))
+```
+
+```{r}
+#| column: margin
+glimpse(rainfall)
+glimpse(temperature)
+tibble(rainfall)
+tibble(temperature)
+```
+
+Using the rainfall and temperature data, perform the following steps and create a new data frame called df:
+
+1.  Start with rainfall data set and drop any rows with NAs.
+
+```{r}
+rainfall2 <- drop_na(rainfall)
+```
+
+2.  Create a new column titled date that combines the columns year, month, day into one column separated by "-". (e.g. "2020-01-01"). This column should not be a character, but should be recognized as a date. (Hint: check out the ymd() function in lubridate R package). You will also want to add a column that just keeps the year.
+
+```{r}
+date<- paste(rainfall2$year, rainfall2$month, rainfall2$day, sep="-")
+rainfall2$date <- date <- ymd(date) 
+class(date)
+rainfall2$year <- year(date)
+rainfall2<- subset(rainfall2, select=-c(month, day))
+```
+
+3.  Using the city_name column, convert the city names (character strings) to all upper case.
+
+```{r}
+rainfall2$city_name<- str_to_upper(rainfall2$city_name)
+```
+
+4.  Join this wrangled rainfall dataset with the temperature dataset such that it includes only observations that are in both data frames. (Hint: there are two keys that you will need to join the two datasets together). (Hint: If all has gone well thus far, you should have a dataset with 83,964 rows and 13 columns).
+
+```{r}
+join <- inner_join(rainfall2, temperature, by=c("date", "city_name"))
+join
+```
+
+### Data Visualization
+
+Part 3:
+
+Part 3A: Plotting temperature data over time: Use the functions in ggplot2 package to make a line plot of the max and min temperature (y-axis) over time (x-axis) for each city in our wrangled data from Part 2. You should only consider years 2014 and onward. For full credit, your plot should include:
+
+1.  For a given city, the min and max temperature should both appear on the plot, but they should be two different colors.
+2.  Use a facet function to facet by city_name to show all cities in one figure.
+
+```{r}
+join2 <- join %>% filter(join$year>'2013')
+
+trend <- join2 %>%
+  ggplot(aes(date, temperature)) +
+  facet_grid(city_name~., scale="free") +
+  labs(title="Figure 1. Max and Min Temperature Between by City", subtitle=str_wrap("Graph displays higher max/min temps during the end/beginning of the year compared to lower max/min temps during the middle of the year.")) +
+  labs(x="Date", y="Temperature", caption="Data from 2014-2019") +
+  geom_line(aes(color=temp_type)) +
+  theme(plot.background=element_rect(fill="white"))
+trend
+```
+
+Part 3B: Plotting rainfall overt time: Here we want to explore the distribution of rainfall (log scale) with histograms for a given city (indicated by the city_name column) for a given year (indicated by the year column) so we can make some exploratory plots of the data.
+
+::: callout-note
+## Description
+
+I chose this design for my function because it allows the person utilizing this code to change x to any city name and y to any year, if it is part of the data set. If not, an error will display if either category of the city name or year is not found in the data. It was also easier to organize it in the same line for the if() command than if it were separated.
+:::
+
+```{r}
+histo<- function(x, y) {
+  b<-join %>%
+  filter(city_name==x, year==y)
+  if(x %in% b$city_name==FALSE | y %in% b$year==FALSE)
+    stop("Search criteria not found in data.")
+  else
+    b %>%
+  ggplot(aes(log(rainfall))) +
+  geom_histogram(bins=20, color="black", fill="lightgreen") +
+  labs(title="Figure 2. Annual Rainfall", subtitle=x) +
+  labs(x=expression("Rainfall (log"[10]*"mm)"), y=expression("Number of Days"), caption=y) +
+  theme_minimal() 
+  }
+histo("PERTH", 2002)
+```
+
+```{r}
+sample_mean <- function(m) {
+  n=length(m)
+  total=sum(m)
+   total/n
+  }
+
+sample_sd <- function(m) {
+  sqrt(sum((m-sample_mean(m))^2)/(length(m)-1))
+}
+
+lower_bound <- function (m) {
+  alpha <- 1-0.95
+  degrees_freedom=length(m)-1
+  t_score= qt(p=alpha/2, df=degrees_freedom, lower.tail=FALSE)
+  sample_se <- sample_sd(m)/(sqrt(length(m)))
+  margin_error <- t_score * sample_se
+  lower_bound <- sample_mean(m) - margin_error
+  print(lower_bound)
+}
+
+upper_bound <- function (m) {
+  alpha <- 1-0.95
+  degrees_freedom=length(m)-1
+  t_score= qt(p=alpha/2, df=degrees_freedom, lower.tail=FALSE)
+  sample_se <- sample_sd(m)/(sqrt(length(m)))
+  margin_error <- t_score * sample_se
+  upper_bound <- sample_mean(m) + margin_error
+  print(upper_bound)
+}
+
+calculate_CI <- function (m, conf=0.95) {
+  alpha <- 1-0.95
+  degrees_freedom=length(m)-1
+  t_score= qt(p=alpha/2, df=degrees_freedom, lower.tail=FALSE)
+  sample_se <- sample_sd(m)/(sqrt(length(m)))
+  margin_error <- t_score * sample_se
+  lower_bound <- sample_mean(m) - margin_error
+  upper_bound <- sample_mean(m) + margin_error
+  print(c(lower_bound, upper_bound))
+}
+```
+
+```{r, include=FALSE}
+rain_df<- join2 %>%
+  group_by(city_name, year) %>%
+  summarise(mean=sample_mean(rainfall), sd=sample_sd(rainfall),lower_bound=lower_bound(rainfall),upper_bound=upper_bound(rainfall))
+```
+
+
+```{r}
+four<- ggplot(data=rain_df, aes(x=year, y=mean)) + 
+  facet_grid(city_name~., scale="free") + 
+  geom_point() +
+  geom_line(aes(color=city_name)) +
+  geom_errorbar(aes(ymin=lower_bound, ymax=upper_bound), width=.1) +
+    labs(title=" Figure 3. Annual Mean Rainfall by City", subtitle=str_wrap("Mean rainfall for all cities declines and meet close to one another in 2019.")) +
+  labs(x="Year", y="Mean", caption="Data from 2014-2019") +
+  theme_minimal() 
+four
+```
+
+::: callout-tip
+## Tip
+
+For help creating your own graphs, use the ggplot2 cheat sheet: <https://rstudio.github.io/cheatsheets/html/data-visualization.html>
+:::
+
+## Summary
+
+When visualizing the temperature changes across the years between 2014 and 2019 in Australia, it is clear that the trends of temperature increases and decreases are similar across the examined cities. However, there are various differences between locations as some had higher upper bounds and smaller lower bounds than others (Figure 1). Specifically looking at Canberra & Sydney, you notice that trends are similar to one another but vary drastically to the temperatures changes to Perth or Melbourne. As for rainfall, the average annual rainfall across cities in Australia also varied and were significantly different from one another when visually inspecting the graph. There were no clear trends of rainfall in Australia (Figure 3). Overall, the temperature and rainfall across the main cities in Austrailia vary drastically and show similar yet significantly different trends. 
+
+### Packages & Functions Used
+
+| Package | Function   |
+|:--------|:-----------|
+| DPLYR   | %\>%       |
+| DPLYR   | filter     |
+| DPLYR   | inner_join |
+| DPLYR   | group_by   |
+| DPLYR   | summarise  |
+| TIDYR   | glimpse    |
+| TIDYR   | mutate     |
+| TIDYR   | subset     |
+| TIDYR   | drop_na    |
+| TIDYR   | tibble     |
+| GGPLOT2 | aes        |
+| GGPLOT2 | facet_grid |
+| GGPLOT2 | geom_line  |
+| GGPLOT2 | theme      |
+| GGPLOT2 | geom_point     |
+
+
