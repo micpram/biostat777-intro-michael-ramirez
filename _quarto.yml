@@ -1,28 +1,22 @@
 project:
   type: website
-  render:
-    - "*.qmd"
-    
+
 website:
-  title: "Michael Ramirez"
-  description: "test test"
+  title: "micpram.github.io"
   navbar:
-    right:
-      - text: "Home"
-        file: README.md
-        menu:
-        - text: "About Me"
-          href: ABOUT.qmd
-        - text: "Data Analysis"
-          href: Overdose.ipynb
+   right:
+   - text: "Home"
+     file: index.qmd
+   - text: "About"
+     file: about.qmd
+   - text: "Example Analysis"
+     file: example.qmd
+
 format:
   html:
-    theme: simplex
-    toc: true
+    theme: cosmo
     css: styles.css
-    code-overflow: wrap
+    toc: true
 
-editor: source
+editor: visual
 
-execute:
-  freeze: auto
