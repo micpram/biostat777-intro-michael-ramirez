@@ -1,11 +1,5 @@
 ---
-title: "Michael Ramirez"
+title: "Biostats 777: Project 1"
 ---
 
-Hello, everyone.
-
-Thank you for visiting my page! My name is Michael. I am a third-year PhD student in the Department of Mental Health at the Johns Hopkins Bloomberg School of Public Health. My research interests focus broadly on substance use disorder, overdose prevention, and machine learning to predict adverse health outcomes. At the moment, I am working on a project meant to identify predictors of future overdose among people who inject drugs and receive care from the Baltimore Needle Exchange Project in Baltimore, MD.
-
-
-![](https://github.com/micpram/biostat777-intro-michael-ramirez/blob/4972ebf583ded82a8bac863ccd4449deae8cbf2b/Graffiti%20Alley%20in%20Baltimore.jpg?raw=true){width=550, height=650}
-
+Link to website: https://micpram.quarto.pub/biostat777-intro-michael-ramirez
